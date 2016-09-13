@@ -4,7 +4,7 @@
 //  Copyright © 2016 Tokbox, Inc. All rights reserved.
 //
 
-class AnnotationBlankCanvasViewController: UIViewController {
+class AnnotationBlankCanvasViewController: UIViewController, OTAnnotationEventNotificatorDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -14,6 +14,7 @@ class AnnotationBlankCanvasViewController: UIViewController {
         
         screenShareView.initializeToolbarView()
         screenShareView.toolbarView!.translatesAutoresizingMaskIntoConstraints = false
+        screenShareView.toolbarView!.annotationEventDelegate = self
         
         self.view.addSubview(screenShareView)
         self.view.addSubview(screenShareView.toolbarView!)
@@ -83,5 +84,31 @@ class AnnotationBlankCanvasViewController: UIViewController {
                            multiplier: 1.0,
                            constant: height).active = true
         
+    }
+    
+    func newNotificationEvent(event: OTAnnotationEventSignal) {
+        switch event {
+        case .DoneButtonClicked:
+            print("DoneButtonClicked")
+        break
+        case .FreeHandButtonClicked:
+            print("FreeHandButtonClicked")
+        break
+        case .ColorPickerButtonClicked:
+            print("ColorPickerButtonClicked")
+        break
+        case .DidPickAColor:
+            print("DidPickAColor")
+        break
+        case .TextAnnotationButtonClicked:
+            print("TextAnnotationButtonClicked")
+        break
+        case .ScreenCaptureButtonClicked:
+            print("ScreenCaptureButtonClicked")
+        break
+        case .EraseButtonClicked:
+            print("EraseButtonClicked")
+        break
+        }
     }
 }

@@ -170,6 +170,9 @@
         [self moveSelectionShadowViewTo:nil];
         [self resetToolbarButtons];
         [[AnnLoggingWrapper sharedInstance].logger logEventAction:KLogActionDone variation:KLogVariationSuccess completion:nil];
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalDoneButtonClicked];
+        }
     }
     else if (sender == self.annotateButton) {
         self.annotationScrollView.annotatable = YES;
@@ -177,6 +180,9 @@
         [self.toolbar insertContentView:self.doneButton atIndex:0];
         [self.annotationScrollView.annotationView setCurrentAnnotatable:[OTAnnotationPath pathWithStrokeColor:self.colorPickerView.selectedColor]];
         [self disableButtons:@[self.annotateButton ,self.textButton, self.eraseButton]];
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalFreeHandButtonClicked];
+        }
     }
     else if (sender == self.textButton) {
         self.annotationScrollView.annotatable = YES;
@@ -187,14 +193,26 @@
         UIViewController *topViewController = [UIViewController topViewControllerWithRootViewController];
         [topViewController presentViewController:editTextViewController animated:YES completion:nil];
         [self disableButtons:@[self.annotateButton, self.textButton, self.screenshotButton, self.eraseButton]];
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalTextAnnotationButtonClicked];
+        }
     }
     else if (sender == self.colorButton) {
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalColorPickerButtonClicked];
+        }
         [self showColorPickerView];
     }
     else if (sender == self.eraseButton) {
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalEraseButtonClicked];
+        }
         [self.annotationScrollView.annotationView undoAnnotatable];
     }
     else if (sender == self.screenshotButton) {
+        if(self.annotationEventDelegate){
+            [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalScreenCaptureButtonClicked];
+        }
         if (self.toolbarViewDataSource) {
             self.captureViewController.sharedImage = [self.annotationScrollView.annotationView captureScreenWithView:[self.toolbarViewDataSource annotationToolbarViewForRootViewForScreenShot:self]];
         }
@@ -254,7 +272,9 @@
 - (void)colorPickerView:(OTAnnotationColorPickerView *)colorPickerView
    didSelectColorButton:(OTAnnotationColorPickerViewButton *)button
           selectedColor:(UIColor *)selectedColor {
-    
+    if(self.annotationEventDelegate){
+        [self.annotationEventDelegate newNotificationEvent:OTAnnotationEventSignalDidPickAColor];
+    }
     [[AnnLoggingWrapper sharedInstance].logger logEventAction:KLogActionPickerColor variation:KLogVariationSuccess completion:nil];
     [self.colorButton setBackgroundColor:selectedColor];
     if (self.annotationScrollView.isAnnotatable) {
