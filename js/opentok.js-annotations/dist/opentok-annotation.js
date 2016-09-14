@@ -98,7 +98,7 @@ OTSolution.Annotations = function (options) {
       self.overlay = null;
     }
 
-    if (item.id === 'OT_capture') {
+    if (item && item.id === 'OT_capture') {
       self.selectedItem = item;
 
       if (!self.overlay) {
@@ -127,7 +127,7 @@ OTSolution.Annotations = function (options) {
       } else {
         self.overlay.style = 'inline';
       }
-    } else if (item.id.indexOf('OT_line_width') !== -1) {
+    } else if (item && item.id.indexOf('OT_line_width') !== -1) {
       if (item.size) {
         self.changeLineWidth(item.size);
       }
@@ -1544,11 +1544,31 @@ OTSolution.Annotations.Toolbar = function (options) {
         });
       };
 
-      context.getElementById('OT_clear').onclick = function () {
+      var onClear = context.getElementById('OT_clear').onclick = function () {
         canvases.forEach(function (canvas) {
           canvas.clear();
         });
       };
+
+      window.addEventListener('OT_clear', function() {
+        onClear();
+        self.selectedItem = null;
+        canvases.forEach(function (canvas) {
+          canvas.selectItem(self.selectedItem);
+        });
+      });
+
+      window.addEventListener('OT_pen', function() {
+        var item = self.items.find(function(item) {
+          return item.id === 'OT_pen';
+        });
+
+        self.selectedItem = item;
+        attachDefaultAction(item);
+        canvases.forEach(function (canvas) {
+          canvas.selectItem(self.selectedItem);
+        });
+      });
     }
   };
 
